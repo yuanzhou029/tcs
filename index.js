@@ -11,7 +11,7 @@ const crypto = require('crypto');
 // ==========================================
 // 核心配置变量 (可在此自由修改与更换)
 // ==========================================
-const PORT = 7860;                                              // 监听端口 (容器开放端口)
+const PORT = 8080;                                              // 监听端口 (容器开放端口)
 const VLESS_UUID = '5b007b63-b462-4caa-974f-50bb3297f62a';      // VLESS 认证 UUID
 const WS_PATH = '/3c7066bcc4f61ed0';                              // WebSocket 接入路径 (暗号)
 
