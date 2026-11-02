@@ -420,6 +420,12 @@ const FAKE_HTML = `<!DOCTYPE html>
 </html>`;
 
 // ==========================================
+// 全局异常兜底保护 (防止极端网络异常导致进程退出)
+// ==========================================
+process.on('uncaughtException', () => {});
+process.on('unhandledRejection', () => {});
+
+// ==========================================
 // 极简原生 WebSocket 帧编解码器 (RFC 6455)
 // ==========================================
 function parseWsFrames(buffer, onData) {
@@ -462,8 +468,9 @@ function parseWsFrames(buffer, onData) {
 
     // opcode 1=text, 2=binary
     if (opcode === 1 || opcode === 2) {
-      onData(payload);
+      onData(payload, false);
     } else if (opcode === 8) {
+      onData(null, true);
       return { offset, close: true };
     }
   }
@@ -512,8 +519,8 @@ function handleVlessStream(socket) {
   socket.on('data', chunk => {
     wsBuffer = Buffer.concat([wsBuffer, chunk]);
 
-    const { offset, close } = parseWsFrames(wsBuffer, payload => {
-      if (close) {
+    const res = parseWsFrames(wsBuffer, (payload, isClose) => {
+      if (isClose) {
         cleanup();
         return;
       }
